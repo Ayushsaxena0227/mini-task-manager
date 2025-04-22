@@ -1,56 +1,121 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
+import axios from "../axios";
+import Taskform from "./components/Taskform";
+import TaskList from "./components/TaskList";
+import "./App.css";
+import "./styles/tasklist.css";
+import "./styles/taskform.css";
+
 function App() {
-  const [tasks, settask] = useState([]);
-  const [text, settext] = useState("");
-  const [editId, setisEditId] = useState(null);
-  const saved = localStorage.getItem("tasks");
+  const [tasks, setTasks] = useState([]);
+  const [text, setText] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  // added error and loading state for better user experience
 
   useEffect(() => {
-    {
-      fetchtasks();
+    fetchTasks();
+  }, []);
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get("/tasks");
+      setTasks(res.data);
+    } catch (err) {
+      console.error("Error fetching tasks:", err);
+      setError("Failed to fetch tasks. Please check if the server is running.");
+      setTasks([]);
+    } finally {
+      setLoading(false);
     }
-  }, [task]);
-  const fetchtasks = async () => {
-    const res = await axios.get("http://localhost:3000/tasks");
-    settask(res.data);
   };
 
-  const handlesubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editId) {
-      await axios.put(`http://localhost:3000/tasks/${editId}`, [text]);
-      setisEditId(null);
-    } else {
-      await axios.post(`http://localhost:3000/tasks`, { text });
+    if (!text.trim()) {
+      return;
     }
-    settext("");
-    fetchtasks();
-  };
-  const handleedit = (task) => {
-    settext(task.text);
-    setisEditId(task._id);
+
+    setLoading(true);
+    setError(null);
+    try {
+      if (editId) {
+        await axios.put(`/tasks/${editId}`, { text });
+        setEditId(null);
+      } else {
+        await axios.post("/tasks/post", { text });
+      }
+      setText("");
+      fetchTasks();
+    } catch (err) {
+      console.error("Error saving task:", err);
+      setError("Failed to save task. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handledelete = async (id) => {
-    await axios.delete(`http://localhost:3000/tasks/{id}`);
-    fetchtasks();
+  const handleEdit = (task) => {
+    setText(task.text);
+    setEditId(task._id);
+  };
+
+  const handleDelete = async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await axios.delete(`/tasks/${id}`);
+      fetchTasks();
+    } catch (err) {
+      console.error("Error deleting task:", err);
+      setError("Failed to delete task. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      <h1>Mini task manager</h1>
-      <Taskform addTask={addTask} />
-      <TaskList task={tasks} deletetask={deletetask} />
-      {tasks.length > 0 &&
+    <div className="app-container">
+      <h1>Mini Task Manager</h1>
+
+      {error && <div className="error-message">{error}</div>}
+      {/* MOVED  BELOW CODE TO SEPERATE COMPOP */}
+      {/* {tasks.length > 0 ? (
         tasks.map((task) => (
-          <div>
-            <li key={task._id}>{task.text}</li>
-            <button onClick={() => handleedit(task)}>Edit</button>
-            <button onClick={() => handledelete(task._id)}></button>
-          </div>
-        ))}
-    </>
+          <div key={task._id} className="task-item">
+            <div className="task-text">{task.text}</div>
+            <div className="task-actions">
+              <button className="edit-btn" onClick={() => handleedit(task)}>
+                Edit
+              </button>
+              <button
+                className="delete-btn"
+                onClick={() => handledelete(task._id)}
+              >
+                Delete
+              </button>
+            </div>
+          </div> */}
+      <Taskform
+        text={text}
+        settext={setText}
+        handlesubmit={handleSubmit}
+        editId={editId}
+        loading={loading}
+      />
+
+      {loading && <p className="loading">Loading...</p>}
+
+      <TaskList
+        tasks={tasks}
+        handleedit={handleEdit}
+        handledelete={handleDelete}
+      />
+    </div>
   );
 }
 

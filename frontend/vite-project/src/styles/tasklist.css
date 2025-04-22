@@ -1,0 +1,69 @@
+/* tasklist.css */
+.task-list {
+  margin-top: 20px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.task-text {
+  flex: 1;
+  font-size: 16px;
+  color: #333;
+  margin-right: 15px;
+  word-break: break-word;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn {
+  background-color: #fbbc05;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+}
+
+.edit-btn:hover {
+  background-color: #f9a825;
+}
+
+.delete-btn {
+  background-color: #ea4335;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+}
+
+.delete-btn:hover {
+  background-color: #d32f2f;
+}
+
+.no-tasks {
+  text-align: center;
+  color: #757575;
+  margin-top: 30px;
+  font-style: italic;
+}
