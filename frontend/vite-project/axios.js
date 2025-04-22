@@ -1,8 +1,7 @@
-// In a separate file like axios.js
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: "https://mini-task-manager.onrender.com",
 });
 
 export default instance;
