@@ -8,7 +8,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://mini-task-manager.vercel.app",
+  "https://mini-task-manager-e8wb.vercel.app/",
 ];
 
 app.use(
